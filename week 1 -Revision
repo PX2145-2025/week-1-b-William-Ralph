@@ -1,0 +1,86 @@
+from numpy import linspace, loadtxt, savetxt, column_stack, array, sin, pi, mgrid
+from numpy.random import rand
+from matplotlib.pyplot import savefig, plot, xlabel, ylabel, title, show, imshow, legend
+from scipy.integrate import cumulative_trapezoid
+
+a=0
+b=1
+fib = []
+fib.append(0)
+fib.append(1)
+
+for i in range(1,19):
+  n=a+b
+  a=b
+  b=n
+  fib.append(n)
+
+
+f=open('data.txt', 'w')
+fib_string=str(fib)
+f.write(fib_string)
+f.close()
+
+r=open('data.txt', 'r')
+data = r.read()
+data_s=data.strip('[]').split(', ')
+data_int = []
+for x in data_s:
+    data_int.append(int(x))
+
+ratios=[]
+for i in range (2,len(data_int)):
+  ratio=data_int[i]/data_int[i-1]
+  ratios.append(ratio)
+
+plot(ratios)
+xlabel('iteration')
+ylabel('fibonacci ratio')
+title('Fibonacci Ratios')
+show()
+
+array_x=array([1,2,3,4,5])
+array_y=array([1,3.9,9.0,16.2,25.1])
+c = column_stack([array_x, array_y])
+savetxt('data_ex.txt', c, fmt='%.6f')
+
+numbers=loadtxt('data_ex.txt')
+
+x_data = numbers[:, 0]
+y_data = numbers[:, 1]
+
+x_1=linspace(1, 5, 100)
+y_function=x_1**2
+
+plot(x_data, y_data, 'ro',)
+plot(x_1, y_function, 'b-')
+
+#exercise 3
+x,y= mgrid[-2*pi:2*pi:100j, -2*pi:2*pi:100j]
+z=sin(x)*sin(y-1)
+imshow(z, extent=[-2*pi,2*pi,-2*pi,2*pi])
+origin='lower'
+show()
+
+#exercise 4
+!wget https://raw.githubusercontent.com/PX2134/data/master/week1/speed.txt
+
+spee=loadtxt('speed.txt', skiprows=1, usecols=(0,1), delimiter=',')
+time=spee[:, 0]
+speed=spee[:, 1]
+position=cumulative_trapezoid(speed, time, initial=0)
+plot(time, position)
+xlabel('time')
+ylabel('position')
+title('position vs time')
+
+#exercise 5
+import pandas as pd
+!wget https://raw.githubusercontent.com/PX2134/data/master/week1/gridwatch.csv
+
+df = pd.read_csv('gridwatch.csv', parse_dates=['timestamp'])
+plot(df['timestamp'], df['wind'],'orange')
+plot(df['timestamp'], df['coal'],'blue')
+xlabel('Time')
+ylabel('Demand (MW)')
+legend(['Wind', 'Coal'])
